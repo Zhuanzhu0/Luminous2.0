@@ -38,6 +38,15 @@ export default function ExamsPage() {
 
   const [activeTab, setActiveTab] = useState<'UPCOMING' | 'RESULTS'>('UPCOMING');
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [selectedMarksheet, setSelectedMarksheet] = useState<{
+    examName: string;
+    courseCode: string;
+    studentName: string;
+    rollNumber: string;
+    score: number;
+    maxScore: number;
+    grade: string;
+  } | null>(null);
 
   // New Exam Form State
   const [newCourseCode, setNewCourseCode] = useState('CS301');
@@ -298,13 +307,31 @@ export default function ExamsPage() {
                       <p className="text-[#667085] text-[11px]">{g.rollNumber}</p>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <span className="text-[#667085]">
                         Score: <strong className="text-[#1F2933]">{g.score} / {g.maxScore}</strong>
                       </span>
                       <span className="px-2.5 py-0.5 rounded-md font-bold text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">
                         Grade {g.grade}
                       </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setSelectedMarksheet({
+                            examName: ex.courseName,
+                            courseCode: ex.courseCode,
+                            studentName: g.studentName,
+                            rollNumber: g.rollNumber,
+                            score: g.score,
+                            maxScore: g.maxScore,
+                            grade: g.grade,
+                          })
+                        }
+                        className="h-6 text-[10px] px-2 border-[#D6D8D5] text-[#1F2933] hover:bg-white cursor-pointer"
+                      >
+                        Marksheet
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -422,6 +449,80 @@ export default function ExamsPage() {
                   </Button>
                 </div>
               </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Modal: Digital Marksheet / Transcript */}
+      {selectedMarksheet && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <Card className="w-full max-w-md bg-white border-[#D6D8D5] text-[#1F2933] shadow-xl">
+            <CardHeader className="p-4 border-b border-[#D6D8D5] flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-bold text-[#1F2933] flex items-center gap-2">
+                <FileCheck className="h-4 w-4 text-emerald-600" />
+                <span>Official Grade Marksheet</span>
+              </CardTitle>
+              <button
+                onClick={() => setSelectedMarksheet(null)}
+                className="text-[#667085] hover:text-[#1F2933] cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4 text-xs">
+              <div className="border border-[#D6D8D5] rounded-xl p-4 bg-[#F7F8F6] space-y-3">
+                <div className="flex justify-between items-start border-b border-[#D6D8D5] pb-2">
+                  <div>
+                    <h4 className="font-bold text-[#1F2933] text-sm">{selectedMarksheet.studentName}</h4>
+                    <p className="text-[#667085] font-mono text-xs">Roll No: {selectedMarksheet.rollNumber}</p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs">
+                    Grade {selectedMarksheet.grade}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[#667085] block text-[11px]">Subject / Course:</span>
+                  <p className="font-bold text-[#1F2933]">{selectedMarksheet.courseCode} — {selectedMarksheet.examName}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#D6D8D5] text-center">
+                  <div className="p-2 rounded bg-white border border-[#D6D8D5]">
+                    <span className="text-[#667085] block text-[10px]">Score Secured</span>
+                    <strong className="text-[#1F2933] text-sm">{selectedMarksheet.score} / {selectedMarksheet.maxScore}</strong>
+                  </div>
+                  <div className="p-2 rounded bg-white border border-[#D6D8D5]">
+                    <span className="text-[#667085] block text-[10px]">Percentage</span>
+                    <strong className="text-emerald-700 text-sm">{Math.round((selectedMarksheet.score / selectedMarksheet.maxScore) * 100)}%</strong>
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-[#667085] text-center italic pt-1">
+                  Digitally signed by Office of Controller of Examinations, Luminous University.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setSelectedMarksheet(null)}
+                  className="text-xs cursor-pointer"
+                >
+                  Close
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    alert(`Digital transcript for ${selectedMarksheet.studentName} downloaded successfully.`);
+                    setSelectedMarksheet(null);
+                  }}
+                  className="bg-[#1F2933] hover:bg-[#111827] text-white font-semibold text-xs cursor-pointer"
+                >
+                  Download PDF
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

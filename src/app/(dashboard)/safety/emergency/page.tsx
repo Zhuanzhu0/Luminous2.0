@@ -62,6 +62,20 @@ export default function SafetyEmergencyPage() {
   const [isTransmitting, setIsTransmitting] = useState(false);
   const [lastBroadcastSuccess, setLastBroadcastSuccess] = useState(false);
 
+  const [selectedChannels, setSelectedChannels] = useState<{
+    sms: boolean;
+    push: boolean;
+    pa: boolean;
+    signage: boolean;
+    email: boolean;
+  }>({
+    sms: true,
+    push: true,
+    pa: true,
+    signage: true,
+    email: false,
+  });
+
   const handleBroadcast = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !message) return;
@@ -387,6 +401,60 @@ export default function SafetyEmergencyPage() {
                     <option value="medium">MEDIUM (Advisory Caution)</option>
                     <option value="low">LOW (Informational Notice)</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Multi-Channel Delivery Options */}
+              <div className="space-y-2 pt-1 border-t border-[#D0D1D6]">
+                <label className="font-bold text-[#B45309] uppercase font-mono text-[11px] block">
+                  Simulated Notification Dispatch Channels:
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <label className="flex items-center gap-2 p-2 rounded bg-white border border-[#D0D1D6] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.push}
+                      onChange={(e) => setSelectedChannels((prev) => ({ ...prev, push: e.target.checked }))}
+                      className="rounded text-red-600 focus:ring-0"
+                    />
+                    <span className="font-mono text-[11px] text-[#202226]">Mobile Push (App)</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-2 rounded bg-white border border-[#D0D1D6] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.sms}
+                      onChange={(e) => setSelectedChannels((prev) => ({ ...prev, sms: e.target.checked }))}
+                      className="rounded text-red-600 focus:ring-0"
+                    />
+                    <span className="font-mono text-[11px] text-[#202226]">Emergency SMS</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-2 rounded bg-white border border-[#D0D1D6] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.pa}
+                      onChange={(e) => setSelectedChannels((prev) => ({ ...prev, pa: e.target.checked }))}
+                      className="rounded text-red-600 focus:ring-0"
+                    />
+                    <span className="font-mono text-[11px] text-[#202226]">Campus PA Horns</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-2 rounded bg-white border border-[#D0D1D6] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.signage}
+                      onChange={(e) => setSelectedChannels((prev) => ({ ...prev, signage: e.target.checked }))}
+                      className="rounded text-red-600 focus:ring-0"
+                    />
+                    <span className="font-mono text-[11px] text-[#202226]">Digital Display Boards</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-2 rounded bg-white border border-[#D0D1D6] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedChannels.email}
+                      onChange={(e) => setSelectedChannels((prev) => ({ ...prev, email: e.target.checked }))}
+                      className="rounded text-red-600 focus:ring-0"
+                    />
+                    <span className="font-mono text-[11px] text-[#202226]">Email Broadcast</span>
+                  </label>
                 </div>
               </div>
 

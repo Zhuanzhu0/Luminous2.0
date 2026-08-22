@@ -514,6 +514,21 @@ export default function HostelPage() {
                   ))
                 )}
               </div>
+
+              {isStaff && (
+                <div className="pt-2 border-t border-[#D6D8D5] flex justify-end gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      alert(`Bed allocation registry updated for Room ${selectedRoom.roomNumber}.`);
+                      setSelectedRoom(null);
+                    }}
+                    className="bg-[#1F2933] hover:bg-[#111827] text-white text-xs font-semibold"
+                  >
+                    Reassign / Allocate Bed
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -167,6 +167,32 @@ export default function AttendancePage() {
         </div>
       </div>
 
+      {/* 30-Day Weekly Attendance Trend Bar */}
+      <div className="p-4 rounded-xl border border-[#D6D8D5] bg-white shadow-xs space-y-2 text-xs">
+        <div className="flex items-center justify-between">
+          <span className="font-semibold text-[#1F2933]">Campus Attendance Velocity &amp; Monthly Trajectory</span>
+          <span className="text-[11px] text-emerald-700 font-medium">96.2% 4-Week Average</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2 pt-1 text-center font-mono text-[11px]">
+          <div className="p-2 rounded-lg bg-[#F7F8F6] border border-[#D6D8D5]">
+            <span className="text-[#667085] block text-[10px]">Week 1</span>
+            <strong className="text-[#1F2933]">94.8%</strong>
+          </div>
+          <div className="p-2 rounded-lg bg-[#F7F8F6] border border-[#D6D8D5]">
+            <span className="text-[#667085] block text-[10px]">Week 2</span>
+            <strong className="text-[#1F2933]">97.1%</strong>
+          </div>
+          <div className="p-2 rounded-lg bg-[#F7F8F6] border border-[#D6D8D5]">
+            <span className="text-[#667085] block text-[10px]">Week 3</span>
+            <strong className="text-[#1F2933]">95.4%</strong>
+          </div>
+          <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900">
+            <span className="text-emerald-700 block text-[10px]">Week 4 (Current)</span>
+            <strong className="text-emerald-800">97.6%</strong>
+          </div>
+        </div>
+      </div>
+
       {/* Filter Bar */}
       <div className="relative">
         <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-[#667085]" />

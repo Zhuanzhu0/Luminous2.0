@@ -601,29 +601,49 @@ export default function SecurityDashboardPage() {
             </div>
 
             <div className="rounded-xl border border-[#D6D8D5] bg-white p-4 space-y-3 shadow-xs">
-              <h3 className="text-xs font-bold text-[#1F2933]">
-                Active Patrol Roster
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold text-[#1F2933]">
+                  Active Patrol Roster &amp; Checkpoints
+                </h3>
+                <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold border border-emerald-200">
+                  All Units Synced
+                </span>
+              </div>
               <div className="space-y-2">
                 {patrolLogs.map((patrol) => (
                   <div
                     key={patrol.id}
-                    className="p-3 rounded-lg bg-[#F7F8F6] border border-[#D6D8D5] flex items-center justify-between text-xs"
+                    className="p-3 rounded-lg bg-[#F7F8F6] border border-[#D6D8D5] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                       <div>
                         <div className="font-semibold text-[#1F2933]">
                           {patrol.officer_name} ({patrol.unit})
                         </div>
-                        <p className="text-[11px] text-[#667085]">{patrol.location_name}</p>
+                        <p className="text-[11px] text-[#667085]">
+                          Checkpoint: <strong className="text-[#1F2933]">{patrol.location_name}</strong>
+                        </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-emerald-700 font-semibold text-[10px] capitalize">
-                        {patrol.status}
-                      </span>
-                      <p className="text-[10px] text-[#8A9199]">Checked in 2m ago</p>
+                    <div className="flex items-center gap-3 self-end sm:self-center">
+                      <div className="text-right">
+                        <span className="text-emerald-700 font-semibold text-[10px] capitalize block">
+                          {patrol.status}
+                        </span>
+                        <p className="text-[10px] text-[#8A9199]">Telemetry Active</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          // Quick checkpoint scan acknowledgment
+                          acknowledgeIncident(patrol.id, patrol.officer_name);
+                        }}
+                        className="h-6 text-[10px] px-2 border-[#D6D8D5] text-[#1F2933] hover:bg-white cursor-pointer"
+                      >
+                        Ping Checkpoint
+                      </Button>
                     </div>
                   </div>
                 ))}

@@ -218,15 +218,15 @@ Ask a question or switch to the **Security Tests** tab to verify authorization b
       case 'student':
         return [
           'What is my attendance?',
-          'What is my current CGPA and enrolled courses?',
+          'What is the upcoming exam schedule?',
+          'Which companies are conducting placement drives?',
           'Are there any active campus emergency alerts?',
-          'Show hostel overview',
         ];
       case 'parent':
         return [
           "What is my child's attendance?",
+          'What is the semester exam schedule?',
           'Are there any campus safety alerts?',
-          'Check transport routes advisory',
         ];
       default:
         return [

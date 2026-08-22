@@ -10,10 +10,13 @@ import {
 import {
   INITIAL_STUDENTS,
   INITIAL_COURSES,
+  INITIAL_EXAMS,
 } from '@/lib/constants/academic-demo-data';
 import {
   INITIAL_HOSTEL_BUILDINGS,
+  INITIAL_HOSTEL_ROOMS,
   INITIAL_HOSTEL_MAINTENANCE,
+  INITIAL_PLACEMENT_DRIVES,
 } from '@/lib/constants/campus-services-demo-data';
 
 export interface UserContext {
@@ -651,6 +654,90 @@ export async function executeAuthorizedTool(
         userRole: role,
         data: {
           alerts: INITIAL_ALERTS.filter((a) => a.is_active),
+        },
+      };
+    }
+
+    // -------------------------------------------------------------------------
+    // 12. EXAM SCHEDULES (Role Aware)
+    // -------------------------------------------------------------------------
+    case 'get_exam_schedule': {
+      const departmentFilter = (args.department as string)?.toLowerCase();
+      let exams = INITIAL_EXAMS;
+      if (departmentFilter) {
+        exams = exams.filter((e) => e.department.toLowerCase().includes(departmentFilter));
+      }
+      return {
+        toolName,
+        authorized: true,
+        clearanceRequired: 'Academic Affairs Clearance',
+        userRole: role,
+        data: {
+          total_exams: exams.length,
+          exams: exams.map((e) => ({
+            code: e.examCode,
+            course: e.courseName,
+            date: e.date,
+            time: e.timeSlot,
+            room: e.room,
+            status: e.status,
+          })),
+        },
+      };
+    }
+
+    // -------------------------------------------------------------------------
+    // 13. PLACEMENT RECRUITMENT DRIVES
+    // -------------------------------------------------------------------------
+    case 'get_placement_drives': {
+      return {
+        toolName,
+        authorized: true,
+        clearanceRequired: 'Placement Directorate Clearance',
+        userRole: role,
+        data: {
+          total_drives: INITIAL_PLACEMENT_DRIVES.length,
+          drives: INITIAL_PLACEMENT_DRIVES.map((d) => ({
+            company: d.companyName,
+            role: d.jobRole,
+            ctc: d.ctcPackage,
+            drive_date: d.driveDate,
+            deadline: d.deadlineDate,
+            min_cgpa: d.minCgpa,
+            status: d.status,
+          })),
+        },
+      };
+    }
+
+    // -------------------------------------------------------------------------
+    // 14. HOSTEL ROOM DETAILS (FERPA Scoped)
+    // -------------------------------------------------------------------------
+    case 'get_hostel_room_details': {
+      if (role === 'security') {
+        return {
+          toolName,
+          authorized: false,
+          clearanceRequired: 'Residential Life Clearance',
+          userRole: role,
+          error: `ACCESS_DENIED: Security role clearance is restricted to perimeter safety and cannot inspect private student room allocations.`,
+        };
+      }
+
+      const roomNumber = (args.room_number as string)?.trim();
+      const myRoom = INITIAL_HOSTEL_ROOMS.find((r) =>
+        r.occupants.some((o) => o.studentName.toLowerCase().includes(user.full_name.toLowerCase()) || o.rollNumber === 'CS23B042')
+      ) || INITIAL_HOSTEL_ROOMS[1];
+
+      const returnedRoom = (role === 'student' || role === 'parent') ? myRoom : (INITIAL_HOSTEL_ROOMS.find((r) => r.roomNumber === roomNumber) || myRoom);
+
+      return {
+        toolName,
+        authorized: true,
+        clearanceRequired: 'Authorized Residential Access',
+        userRole: role,
+        data: {
+          room: returnedRoom,
         },
       };
     }

@@ -702,6 +702,14 @@ export default function PlacementPage() {
                 <p>• Max Backlogs: {selectedDrive.maxBacklogs} (Your Backlogs: <strong className="text-emerald-700">{activeStudent.activeBacklogs || 0}</strong> ✓)</p>
               </div>
 
+              <div className="space-y-1 pt-1 border-t border-[#D6D8D5]">
+                <label className="text-xs font-semibold text-[#1F2933] block">Attach Verified Student Resume (PDF):</label>
+                <div className="p-2.5 rounded-lg border border-[#D6D8D5] bg-[#F7F8F6] flex items-center justify-between text-xs">
+                  <span className="text-[#1F2933] font-mono">Aanya_Patel_CV_2026.pdf (1.2 MB)</span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Verified</span>
+                </div>
+              </div>
+
               <div className="flex justify-end gap-2 pt-2 border-t border-[#D6D8D5]">
                 <Button
                   variant="outline"
