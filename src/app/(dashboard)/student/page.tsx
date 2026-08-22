@@ -32,6 +32,7 @@ export default function StudentDashboardPage() {
   const [timetableDrawer, setTimetableDrawer] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [deptFilter, setDeptFilter] = useState('ALL');
+  const [selectedStudentId, setSelectedStudentId] = useState(students[0]?.id || 'std-001');
 
   const isActualStudent = role === 'student';
   const isAuthorized = isActualStudent || isSuperAdmin || isAdmin || role === 'super_admin' || role === 'admin';
@@ -49,8 +50,6 @@ export default function StudentDashboardPage() {
       </div>
     );
   }
-
-  const [selectedStudentId, setSelectedStudentId] = useState(students[0]?.id || 'std-001');
 
   const currentStudent =
     (isActualStudent
@@ -80,7 +79,7 @@ export default function StudentDashboardPage() {
     ? user?.full_name || currentStudent.name
     : currentStudent.name;
 
-  // Search Results filtering
+  // Search Results filtering (courses only for student privacy)
   const matchingCourses = courses.filter((c) => {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return false;
@@ -89,13 +88,13 @@ export default function StudentDashboardPage() {
     return matchesDept && matchesQ;
   });
 
-  const matchingStudents = students.filter((s) => {
+  const matchingStudents = !isActualStudent ? students.filter((s) => {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return false;
     const matchesDept = deptFilter === 'ALL' || s.department.toLowerCase().includes(deptFilter.toLowerCase());
     const matchesQ = s.name.toLowerCase().includes(q) || s.rollNumber.toLowerCase().includes(q) || s.department.toLowerCase().includes(q);
     return matchesDept && matchesQ;
-  });
+  }) : [];
 
   return (
     <div className="space-y-6">
@@ -168,7 +167,7 @@ export default function StudentDashboardPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#667085]" />
           <Input
-            placeholder="Search courses, curriculum, schedule, or student peers..."
+            placeholder="Search courses, curriculum, or lecture schedule..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 text-xs border-[#D6D8D5] bg-white rounded-xl shadow-xs"

@@ -400,28 +400,47 @@ export default function PlacementPage() {
       {/* TAB: MY APPLICATIONS (Student View) */}
       {!isStaff && activeTab === 'applications' && (
         <div className="space-y-3">
-          {placementApplications.map((app) => (
-            <div
-              key={app.id}
-              className="p-4 rounded-xl border border-[#D6D8D5] bg-white shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-[#1F2933]">{app.companyName}</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F0F1EF] text-[#1F2933] border border-[#D6D8D5]">
-                    {app.jobRole}
+          {placementApplications.filter(
+            (app) =>
+              app.rollNumber === activeStudent.rollNumber ||
+              app.studentName.toLowerCase() === activeStudent.name.toLowerCase()
+          ).length === 0 ? (
+            <div className="p-8 text-center bg-white border border-[#D6D8D5] rounded-xl space-y-2">
+              <p className="text-sm font-semibold text-[#1F2933]">No Applications Submitted Yet</p>
+              <p className="text-xs text-[#667085]">
+                Browse available recruitment drives under the &ldquo;Eligible Drives&rdquo; tab and apply to get started.
+              </p>
+            </div>
+          ) : (
+            placementApplications
+              .filter(
+                (app) =>
+                  app.rollNumber === activeStudent.rollNumber ||
+                  app.studentName.toLowerCase() === activeStudent.name.toLowerCase()
+              )
+              .map((app) => (
+                <div
+                  key={app.id}
+                  className="p-4 rounded-xl border border-[#D6D8D5] bg-white shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-[#1F2933]">{app.companyName}</span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F0F1EF] text-[#1F2933] border border-[#D6D8D5]">
+                        {app.jobRole}
+                      </span>
+                    </div>
+                    <p className="text-[#667085] text-xs">
+                      Applicant: {app.studentName} ({app.rollNumber}) · CGPA: {app.cgpa}
+                    </p>
+                    <p className="text-[11px] text-[#667085]">Applied on: {new Date(app.appliedAt).toLocaleDateString()}</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 self-start sm:self-center">
+                    {app.status}
                   </span>
                 </div>
-                <p className="text-[#667085] text-xs">
-                  Applicant: {app.studentName} ({app.rollNumber}) · CGPA: {app.cgpa}
-                </p>
-                <p className="text-[11px] text-[#667085]">Applied on: {new Date(app.appliedAt).toLocaleDateString()}</p>
-              </div>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 self-start sm:self-center">
-                {app.status}
-              </span>
-            </div>
-          ))}
+              ))
+          )}
         </div>
       )}
 

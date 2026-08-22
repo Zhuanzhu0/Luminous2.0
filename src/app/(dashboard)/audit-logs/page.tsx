@@ -24,15 +24,15 @@ export default function AuditLogsPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'audit' | 'safety' | 'patrol'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  if (!isSuperAdmin && !isAdmin && role !== 'security' && role !== 'faculty') {
+  if (!isSuperAdmin && !isAdmin) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-8 bg-[#F7F8F6] border border-[#D6D8D5] rounded-xl space-y-3">
         <div className="h-10 w-10 rounded-full bg-[#F0F1EF] border border-[#D6D8D5] flex items-center justify-center text-[#1F2933]">
           <ShieldAlert className="h-5 w-5" />
         </div>
-        <h2 className="text-base font-bold text-[#1F2933]">Staff Clearance Required</h2>
+        <h2 className="text-base font-bold text-[#1F2933]">Administrator Clearance Required</h2>
         <p className="text-xs text-[#667085] max-w-sm">
-          System audit and security event logs are restricted to administrative and safety personnel.
+          System audit logs, IP trails, and security governance events are restricted to institutional administrators.
         </p>
       </div>
     );

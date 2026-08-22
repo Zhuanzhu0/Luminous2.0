@@ -16,8 +16,13 @@ import {
 } from 'lucide-react';
 import { Complaint, ComplaintCategory } from '@/lib/types';
 
+import { useRole } from '@/lib/hooks/use-role';
+
 export default function ComplaintsPage() {
   const { complaints, lodgeComplaint, updateComplaintStatus } = useCampusServices();
+  const { user, role, isSuperAdmin, isAdmin } = useRole();
+
+  const isStaff = isSuperAdmin || isAdmin || role === 'faculty' || role === 'warden';
 
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -33,7 +38,15 @@ export default function ComplaintsPage() {
   const [ticketLocation, setTicketLocation] = useState('');
   const [ticketCategoryHint, setTicketCategoryHint] = useState<ComplaintCategory>('other');
 
-  const filteredComplaints = complaints.filter((c) => {
+  const userScopedComplaints = isStaff
+    ? complaints
+    : complaints.filter(
+        (c) =>
+          (user?.full_name && c.reportedBy.toLowerCase().includes(user.full_name.toLowerCase())) ||
+          c.reportedBy === 'Aanya Patel'
+      );
+
+  const filteredComplaints = userScopedComplaints.filter((c) => {
     const matchesCat = categoryFilter === 'ALL' || c.category === categoryFilter;
     const matchesStatus = statusFilter === 'ALL' || c.status === statusFilter;
     const matchesSearch =
@@ -255,35 +268,42 @@ export default function ComplaintsPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-between border-t border-[#D6D8D5] pt-3">
-                <span className="text-xs text-[#667085]">Update Ticket Status:</span>
-                <div className="flex gap-2">
-                  {selectedTicket.status !== 'In Progress' && (
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        updateComplaintStatus(selectedTicket.id, 'In Progress');
-                        setSelectedTicket(null);
-                      }}
-                      className="text-xs bg-amber-600 hover:bg-amber-700 text-white font-medium h-7 cursor-pointer"
-                    >
-                      Set In Progress
-                    </Button>
-                  )}
-                  {selectedTicket.status !== 'Resolved' && (
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        updateComplaintStatus(selectedTicket.id, 'Resolved', 'Resolved by department officer');
-                        setSelectedTicket(null);
-                      }}
-                      className="text-xs bg-[#1F2933] hover:bg-[#111827] text-white font-medium h-7 cursor-pointer"
-                    >
-                      Mark Resolved
-                    </Button>
-                  )}
+              {isStaff ? (
+                <div className="flex items-center justify-between border-t border-[#D6D8D5] pt-3">
+                  <span className="text-xs text-[#667085]">Update Ticket Status:</span>
+                  <div className="flex gap-2">
+                    {selectedTicket.status !== 'In Progress' && (
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          updateComplaintStatus(selectedTicket.id, 'In Progress');
+                          setSelectedTicket(null);
+                        }}
+                        className="text-xs bg-amber-600 hover:bg-amber-700 text-white font-medium h-7 cursor-pointer"
+                      >
+                        Set In Progress
+                      </Button>
+                    )}
+                    {selectedTicket.status !== 'Resolved' && (
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          updateComplaintStatus(selectedTicket.id, 'Resolved', 'Resolved by department officer');
+                          setSelectedTicket(null);
+                        }}
+                        className="text-xs bg-[#1F2933] hover:bg-[#111827] text-white font-medium h-7 cursor-pointer"
+                      >
+                        Mark Resolved
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="border-t border-[#D6D8D5] pt-3 flex items-center justify-between text-xs text-[#667085]">
+                  <span>Current Resolution Status:</span>
+                  <span className="font-semibold text-[#1F2933]">{selectedTicket.status}</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

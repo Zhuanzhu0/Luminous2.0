@@ -15,7 +15,6 @@ const CreateAlertSchema = z.object({
   target_roles: z.array(z.string()).optional(),
   scope: z.enum(['campus_wide', 'building', 'hostel', 'department']).optional(),
   target_entity: z.string().optional(),
-  sender_role: z.string().optional(),
 });
 
 export async function GET(request: Request) {
@@ -67,8 +66,8 @@ export async function POST(request: Request) {
     const validated = parseResult.data;
 
     // 4. Strict RBAC Authorization Check:
-    // Resolve role from payload sender_role or authenticated session
-    const effectiveRole: UserRole = (validated.sender_role as UserRole) || auth.user?.role || 'student';
+    // Resolve role strictly from authenticated session
+    const effectiveRole: UserRole = auth.user?.role || 'student';
     const allowedBroadcastRoles: UserRole[] = ['super_admin', 'admin', 'security'];
 
     if (!allowedBroadcastRoles.includes(effectiveRole)) {

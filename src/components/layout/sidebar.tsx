@@ -199,7 +199,7 @@ const NAV_SECTIONS: NavSection[] = [
         title: 'System & Safety Logs',
         href: '/audit-logs',
         icon: ScrollText,
-        roles: ['super_admin', 'admin', 'security', 'faculty', 'warden'],
+        roles: ['super_admin', 'admin'],
       },
       {
         title: 'Settings',

@@ -120,7 +120,7 @@ export default function AdminDashboardPage() {
           </Link>
         </Button>
         <Button asChild size="sm" variant="outline" className="gap-1.5">
-          <Link href="/alerts">
+          <Link href="/safety/emergency">
             <BarChart3 className="h-4 w-4" /> View Reports
           </Link>
         </Button>
@@ -139,7 +139,7 @@ export default function AdminDashboardPage() {
               <AlertTriangle className="h-4 w-4 text-[#C94C4C]" />
               Critical Alerts
             </CardTitle>
-            <Link href="/alerts" className="flex items-center gap-1 text-xs font-medium text-[#8a6d1a] hover:underline">
+            <Link href="/safety/emergency" className="flex items-center gap-1 text-xs font-medium text-[#8a6d1a] hover:underline">
               View all <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </CardHeader>

@@ -35,14 +35,24 @@ export default function AttendancePage() {
     { studentId: 'std-005', rollNumber: 'EC24B008', studentName: 'Sneha Krishnan', status: 'present' },
   ]);
 
+  const isStudent = role === 'student';
   const canMark = role === 'super_admin' || role === 'admin' || role === 'faculty';
+  const currentStudent = isStudent
+    ? students.find(
+        (s) =>
+          (user?.email && s.email.toLowerCase() === user.email.toLowerCase()) ||
+          (user?.full_name && s.name.toLowerCase() === user.full_name.toLowerCase())
+      ) || students[0]
+    : null;
 
   // Metrics
   const totalSubmissions = attendanceRecords.length;
   const defaultersCount = students.filter((s) => s.attendancePercentage < 75).length;
-  const overallAvgAttendance = Math.round(
-    students.reduce((acc, s) => acc + s.attendancePercentage, 0) / (students.length || 1)
-  );
+  const overallAvgAttendance = isStudent
+    ? currentStudent?.attendancePercentage || 96
+    : Math.round(
+        students.reduce((acc, s) => acc + s.attendancePercentage, 0) / (students.length || 1)
+      );
 
   const handleStatusToggle = (index: number, newStatus: 'present' | 'absent' | 'late' | 'excused') => {
     setStudentLogs((prev) =>
@@ -117,26 +127,42 @@ export default function AttendancePage() {
       {/* Clean Metric Summary Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="p-4 rounded-xl border border-[#D6D8D5] bg-white shadow-xs">
-          <span className="text-xs text-[#667085]">Average Campus Attendance</span>
+          <span className="text-xs text-[#667085]">
+            {isStudent ? 'My Attendance Record' : 'Average Campus Attendance'}
+          </span>
           <div className="flex items-baseline gap-2 mt-1">
             <span className="text-2xl font-bold text-[#1F2933]">{overallAvgAttendance}%</span>
-            <span className="text-xs font-medium text-emerald-700">Healthy rate</span>
+            <span className="text-xs font-medium text-emerald-700">
+              {overallAvgAttendance >= 75 ? 'Satisfactory' : 'Action Required'}
+            </span>
           </div>
         </div>
 
         <div className="p-4 rounded-xl border border-[#D6D8D5] bg-white shadow-xs">
-          <span className="text-xs text-[#667085]">Recorded Sessions</span>
+          <span className="text-xs text-[#667085]">
+            {isStudent ? 'Enrolled Subjects' : 'Recorded Sessions'}
+          </span>
           <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-2xl font-bold text-[#1F2933]">{totalSubmissions}</span>
-            <span className="text-xs text-[#667085]">Total verified batches</span>
+            <span className="text-2xl font-bold text-[#1F2933]">
+              {isStudent ? currentStudent?.enrolledCourses.length || 3 : totalSubmissions}
+            </span>
+            <span className="text-xs text-[#667085]">
+              {isStudent ? 'Active semester courses' : 'Total verified batches'}
+            </span>
           </div>
         </div>
 
         <div className="p-4 rounded-xl border border-[#D6D8D5] bg-white shadow-xs">
-          <span className="text-xs text-[#667085]">Attendance Warnings (&lt;75%)</span>
+          <span className="text-xs text-[#667085]">
+            {isStudent ? 'Attendance Policy' : 'Attendance Warnings (<75%)'}
+          </span>
           <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-2xl font-bold text-amber-700">{defaultersCount} Students</span>
-            <span className="text-xs text-[#667085]">Follow-up required</span>
+            <span className="text-2xl font-bold text-emerald-700">
+              {isStudent ? '75% Required' : `${defaultersCount} Students`}
+            </span>
+            <span className="text-xs text-[#667085]">
+              {isStudent ? 'Exam eligibility met' : 'Follow-up required'}
+            </span>
           </div>
         </div>
       </div>
@@ -221,7 +247,14 @@ export default function AttendancePage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#E5E7EB]">
-                        {record.studentLogs.map((log, idx) => (
+                        {(isStudent
+                          ? record.studentLogs.filter(
+                              (log) =>
+                                log.rollNumber === currentStudent?.rollNumber ||
+                                (user?.full_name && log.studentName.toLowerCase().includes(user.full_name.toLowerCase()))
+                            )
+                          : record.studentLogs
+                        ).map((log, idx) => (
                           <tr key={idx} className="hover:bg-white/60">
                             <td className="py-2.5 font-medium text-[#1F2933]">{log.rollNumber}</td>
                             <td className="py-2.5 text-[#1F2933]">{log.studentName}</td>

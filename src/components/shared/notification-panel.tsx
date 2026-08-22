@@ -105,7 +105,7 @@ export function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
 
         <div className="border-t border-[#D6D8D5] bg-[#F7F8F6] p-2 text-center">
           <Link
-            href="/alerts"
+            href="/safety/emergency"
             onClick={onClose}
             className="text-xs text-[#8a6d1a] hover:text-[#B45309] font-medium"
           >

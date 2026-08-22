@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { HostelRoom } from '@/lib/types';
+import { useRole } from '@/lib/hooks/use-role';
 
 export default function HostelPage() {
   const {
@@ -28,6 +29,9 @@ export default function HostelPage() {
     submitHostelMaintenance,
     reportHostelIncident,
   } = useCampusServices();
+
+  const { user, role, isSuperAdmin, isAdmin } = useRole();
+  const isStaff = isSuperAdmin || isAdmin || role === 'warden' || role === 'security';
 
   const [activeTab, setActiveTab] = useState<'buildings' | 'rooms' | 'occupancy' | 'maintenance' | 'incidents'>('buildings');
   const [buildingFilter, setBuildingFilter] = useState<string>('ALL');
@@ -59,7 +63,15 @@ export default function HostelPage() {
   const totalVacant = totalCapacity - totalOccupied;
   const occupancyRate = Math.round((totalOccupied / (totalCapacity || 1)) * 100);
 
-  const filteredRooms = hostelRooms.filter((r) => {
+  const myRoom = hostelRooms.find((r) =>
+    r.occupants.some(
+      (o) =>
+        o.rollNumber === 'CS23B042' ||
+        (user?.full_name && o.studentName.toLowerCase().includes(user.full_name.toLowerCase()))
+    )
+  ) || hostelRooms[1];
+
+  const filteredRooms = (isStaff ? hostelRooms : [myRoom]).filter((r) => {
     const matchesBuilding = buildingFilter === 'ALL' || r.buildingCode === buildingFilter;
     const matchesStatus = roomStatusFilter === 'ALL' || r.status === roomStatusFilter;
     const matchesSearch = r.roomNumber.includes(searchTerm) || r.occupants.some((o) => o.studentName.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -164,13 +176,20 @@ export default function HostelPage() {
       {/* Navigation Tabs (Segmented Pills) */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
         <div className="inline-flex p-1 bg-[#F0F1EF] rounded-full border border-[#D6D8D5] gap-1">
-          {[
-            { id: 'buildings', label: 'Residential Buildings', icon: Building2 },
-            { id: 'rooms', label: 'Room Directory', icon: Bed },
-            { id: 'occupancy', label: 'Occupancy', icon: Users },
-            { id: 'maintenance', label: 'Maintenance Requests', icon: Wrench, count: hostelMaintenance.filter(m => m.status !== 'Fixed').length },
-            { id: 'incidents', label: 'Hostel Log & Curfew', icon: ShieldAlert, count: hostelIncidents.filter(i => i.status !== 'Resolved').length },
-          ].map((tab) => {
+          {(isStaff
+            ? [
+                { id: 'buildings', label: 'Residential Buildings', icon: Building2 },
+                { id: 'rooms', label: 'Room Directory', icon: Bed },
+                { id: 'occupancy', label: 'Occupancy', icon: Users },
+                { id: 'maintenance', label: 'Maintenance Requests', icon: Wrench, count: hostelMaintenance.filter(m => m.status !== 'Fixed').length },
+                { id: 'incidents', label: 'Hostel Log & Curfew', icon: ShieldAlert, count: hostelIncidents.filter(i => i.status !== 'Resolved').length },
+              ]
+            : [
+                { id: 'buildings', label: 'Residential Buildings', icon: Building2 },
+                { id: 'rooms', label: 'My Room Allocation', icon: Bed },
+                { id: 'maintenance', label: 'Maintenance Requests', icon: Wrench, count: hostelMaintenance.filter(m => m.status !== 'Fixed').length },
+              ]
+          ).map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
